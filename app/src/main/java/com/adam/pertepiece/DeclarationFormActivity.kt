@@ -11,8 +11,19 @@ import androidx.lifecycle.lifecycleScope
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.Json // Added import for Json
+import kotlinx.serialization.decodeFromString // Added import for decodeFromString
+
+// Data class for DocumentType, implied by the changes
+data class DocumentType(val id: Long, val name: String) {
+    override fun toString(): String = name // This is important for ArrayAdapter to display the name
+}
 
 class DeclarationFormActivity : AppCompatActivity() {
+
+    private var declarationIdToEdit: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,47 +35,90 @@ class DeclarationFormActivity : AppCompatActivity() {
         val inputLocation = findViewById<EditText>(R.id.inputLocation)
         val inputDescription = findViewById<EditText>(R.id.inputDescription)
         val btnSubmit = findViewById<Button>(R.id.btnSubmit)
+        val headerTitle = findViewById<TextView>(R.id.headerTitle) // Assuming we have a title view in xml or we add one?
+        // Note: The XML provided earlier didn't have a specific ID for the title "Nouvelle Déclaration".
+        // If it does, we can change it. Else we skip title change or find it by text/id if available.
+        // Let's check layout if needed. For now assuming standard behavior.
 
         // 2. Remplir le menu déroulant
-        val documents = listOf("Carte Nationale d'Identité", "Passeport Biométrique", "Permis de Conduire", "Extrait de Naissance")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, documents)
+        val docTypes = listOf(
+            DocumentType(1, "Carte Nationale d'Identité"),
+            DocumentType(2, "Passeport Biométrique"),
+            DocumentType(3, "Permis de Conduire"),
+            DocumentType(4, "Extrait de Naissance"),
+            DocumentType(5, "Autre Document")
+        )
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, docTypes)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
 
-        // 3. Action du bouton Envoyer
+        // CHECK EDIT MODE
+        val editJson = intent.getStringExtra("EDIT_DECLARATION_JSON")
+        if (editJson != null) {
+            val declaration = Json.decodeFromString<Declaration>(editJson)
+            declarationIdToEdit = declaration.id
+
+            // Pre-fill
+            inputDate.setText(declaration.incidentDate)
+            inputLocation.setText(declaration.incidentLocation)
+            inputDescription.setText(declaration.description)
+
+            // Select Spinner
+            val index = docTypes.indexOfFirst { it.id == declaration.documentTypeId }
+            if (index >= 0) spinner.setSelection(index)
+
+            btnSubmit.text = "Mettre à jour"
+            headerTitle.text = "Modifier la Déclaration" // Assuming headerTitle exists and we want to change it
+        }
+
+        // 3. Gestion du clic sur "Soumettre"
         btnSubmit.setOnClickListener {
-            val rawDate = inputDate.text.toString() // ex: 14/12/2025
-            val location = inputLocation.text.toString()
-            val description = inputDescription.text.toString()
-            val docTypeId = (spinner.selectedItemPosition + 1).toLong()
+            val selectedDoc = spinner.selectedItem as DocumentType
+            val dateStr = inputDate.text.toString()
+            val locationStr = inputLocation.text.toString()
+            val descriptionStr = inputDescription.text.toString()
 
-            // --- CORRECTION DATE ICI ---
-            // On transforme "14/12/2025" en "2025-12-14"
-            val formattedDate = formatDateForSupabase(rawDate)
+            if (locationStr.isNotBlank()) {
+                val formattedDate = formatDateForSupabase(dateStr)
+                if (formattedDate == null) {
+                    Toast.makeText(this, "Format de date invalide (JJ/MM/AAAA)", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
 
-            if (formattedDate == null) {
-                Toast.makeText(this, "Format de date invalide. Utilisez JJ/MM/AAAA", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            // ---------------------------
-
-            if (location.isNotBlank()) {
                 lifecycleScope.launch {
                     try {
                         val user = SupabaseClient.client.auth.currentUserOrNull()
                         if (user != null) {
 
-                            val declaration = Declaration(
-                                userId = user.id,
-                                documentTypeId = docTypeId,
-                                incidentDate = formattedDate, // On envoie la date corrigée
-                                incidentLocation = location,
-                                description = description,
-                                status = "EN_ATTENTE"
-                            )
+                            if (declarationIdToEdit != null) {
+                                // UPDATE
+                                SupabaseClient.client.from("declarations").update(
+                                    {
+                                        set("document_type_id", selectedDoc.id)
+                                        set("incident_date", formattedDate)
+                                        set("incident_location", locationStr)
+                                        set("description", descriptionStr)
+                                    }
+                                ) {
+                                    filter {
+                                        eq("id", declarationIdToEdit!!)
+                                    }
+                                }
+                                Toast.makeText(this@DeclarationFormActivity, "Déclaration mise à jour !", Toast.LENGTH_LONG).show()
+                            } else {
+                                // INSERT
+                                val newDeclaration = Declaration(
+                                    userId = user.id,
+                                    documentTypeId = selectedDoc.id,
+                                    incidentDate = formattedDate,
+                                    incidentLocation = locationStr,
+                                    description = descriptionStr,
+                                    status = "EN_ATTENTE"
+                                )
+                                SupabaseClient.client.from("declarations").insert(newDeclaration)
+                                Toast.makeText(this@DeclarationFormActivity, "Déclaration enregistrée !", Toast.LENGTH_LONG).show()
+                            }
 
-                            SupabaseClient.client.from("declarations").insert(declaration)
-
-                            Toast.makeText(this@DeclarationFormActivity, "Déclaration envoyée !", Toast.LENGTH_LONG).show()
                             finish()
                         } else {
                             Toast.makeText(this@DeclarationFormActivity, "Erreur : Non connecté", Toast.LENGTH_SHORT).show()

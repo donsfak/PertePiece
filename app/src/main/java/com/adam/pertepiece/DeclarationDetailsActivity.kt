@@ -59,7 +59,17 @@ class DeclarationDetailsActivity : AppCompatActivity() {
         // 4. Action: Back
         btnBack.setOnClickListener { finish() }
 
-        // 5. Action: Mark Found
+        // 5. Action: Edit
+        val btnEdit = findViewById<ImageButton>(R.id.btnEdit)
+        btnEdit.setOnClickListener {
+            val intent = Intent(this, DeclarationFormActivity::class.java)
+            val json = Json.encodeToString(declaration)
+            intent.putExtra("EDIT_DECLARATION_JSON", json)
+            startActivity(intent)
+            finish() // Close details so we return to list or we can reload details on return? For now, finish.
+        }
+
+        // 6. Action: Mark Found
         btnMarkFound.setOnClickListener {
             updateDeclarationStatus("RETROUVE")
         }
