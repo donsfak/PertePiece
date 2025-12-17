@@ -1,0 +1,177 @@
+package com.adam.pertepiece
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Order
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var emptyStateView: View
+    private lateinit var adapter: DeclarationAdapter
+    
+    // Store all declarations for filtering
+    private var allDeclarations: List<Declaration> = emptyList()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // 1. Vérification de sécurité
+        val session = SupabaseClient.client.auth.currentSessionOrNull()
+        if (session == null) {
+            goToLogin()
+            return
+        }
+
+        // 2. Initialisation des vues
+        recyclerView = findViewById(R.id.recyclerViewDeclarations)
+        emptyStateView = findViewById(R.id.emptyStateView)
+        val fabAdd = findViewById<FloatingActionButton>(R.id.fabAdd)
+        val avatarIcon = findViewById<android.widget.ImageView>(R.id.avatarIcon)
+        val searchView = findViewById<androidx.appcompat.widget.SearchView>(R.id.searchView)
+
+        // 3. Configuration de base du RecyclerView
+        adapter = DeclarationAdapter(emptyList()) { declaration ->
+            val intent = Intent(this, DeclarationDetailsActivity::class.java)
+            val json = Json.encodeToString(declaration)
+            intent.putExtra("DECLARATION_JSON", json)
+            startActivity(intent)
+        }
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
+
+        // 4. Fetch Data
+        fetchDeclarations()
+
+        // 5. Action : Nouvelle déclaration
+        fabAdd.setOnClickListener {
+            val intent = Intent(this, DeclarationFormActivity::class.java)
+            startActivity(intent)
+        }
+        
+        // 6. Action : Profile/Logout via Avatar
+        avatarIcon.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+        
+        // 7. Search Logic
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                filterList(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterList(newText)
+                return true
+            }
+        })
+    }
+    
+    private fun filterList(query: String?) {
+        if (query.isNullOrEmpty()) {
+            adapter.updateList(allDeclarations)
+            showEmptyState(allDeclarations.isEmpty())
+            return
+        }
+
+        val lowerQuery = query.lowercase().trim()
+        val filteredList = allDeclarations.filter {
+            val docName = getDocName(it.documentTypeId).lowercase()
+            val location = it.incidentLocation.lowercase()
+            
+            docName.contains(lowerQuery) || location.contains(lowerQuery)
+        }
+        
+        adapter.updateList(filteredList)
+        // If search yields no results, we might want to show a different empty state (e.g. "No results")
+        // For now, standard empty state is fine, or we keep it simple.
+        if (filteredList.isEmpty()) {
+            // Optional: could show a "No results found" text instead of generic empty state
+             recyclerView.visibility = View.GONE
+        } else {
+             recyclerView.visibility = View.VISIBLE
+             emptyStateView.visibility = View.GONE
+        }
+    }
+    
+    private fun getDocName(id: Long): String {
+        return when (id) {
+            1L -> "Carte Nationale d'Identité"
+            2L -> "Passeport Biométrique"
+            3L -> "Permis de Conduire"
+            4L -> "Extrait de Naissance"
+            else -> "Autre Document"
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (SupabaseClient.client.auth.currentSessionOrNull() != null) {
+            fetchDeclarations()
+        }
+    }
+
+    private fun fetchDeclarations() {
+        lifecycleScope.launch {
+            try {
+                // On récupère uniquement les déclarations de l'utilisateur connecté
+                val userId = SupabaseClient.client.auth.currentUserOrNull()?.id ?: return@launch
+                
+                val list = SupabaseClient.client.from("declarations")
+                    .select {
+                        filter {
+                            eq("user_id", userId)
+                        }
+                        // To allow filtering locally properly, we fetch all.
+                        // Order by latest might be nice
+                        order(column = "created_at", order = Order.DESCENDING) 
+                    }.decodeList<Declaration>()
+
+                allDeclarations = list // Update the source list
+                
+                // Reset search view filter if needed, or re-apply current filter?
+                // For simplicity, just show all initially on refresh
+                adapter.updateList(list)
+                showEmptyState(list.isEmpty())
+                
+            } catch (e: Exception) {
+                // En cas d'erreur (réseau...), on peut afficher un Toast
+                // Toast.makeText(this@MainActivity, "Erreur chargement: ${e.message}", Toast.LENGTH_SHORT).show()
+                e.printStackTrace()
+            }
+        }
+    }
+
+    // Fonction utilitaire pour basculer entre la liste et l'état vide
+    private fun showEmptyState(isEmpty: Boolean) {
+        if (isEmpty) {
+            recyclerView.visibility = View.GONE
+            emptyStateView.visibility = View.VISIBLE
+        } else {
+            recyclerView.visibility = View.VISIBLE
+            emptyStateView.visibility = View.GONE
+        }
+    }
+
+    private fun goToLogin() {
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
+    }
+}
