@@ -16,7 +16,8 @@
         android:theme="@style/Theme.PertePiece">
         <activity
             android:name=".SignUpActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.PertePiece.Login" />
         <activity
             android:name=".DeclarationFormActivity"
             android:exported="false" />
@@ -33,7 +34,7 @@
             android:name=".LoginActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.PertePiece">
+            android:theme="@style/Theme.PertePiece.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

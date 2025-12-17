@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Original colors -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,5 +8,21 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="brand_blue">#1E88E5</color> <color name="text_hint">#9E9E9E</color>  <color name="input_stroke">#E0E0E0</color>
+    
+    <!-- Brand Colors -->
+    <color name="brand_blue">#1E88E5</color>
+    <color name="brand_blue_dark">#1565C0</color>
+    <color name="brand_blue_light">#64B5F6</color>
+    
+    <!-- Login Screen Colors -->
+    <color name="login_background">#FFFFFF</color>
+    <color name="login_card_background">#F8FAFC</color>
+    <color name="input_background">#F5F7FA</color>
+    <color name="input_stroke">#E3E8EF</color>
+    <color name="input_stroke_focused">#1E88E5</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#1A202C</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="text_hint">#9E9E9E</color>
 </resources>
