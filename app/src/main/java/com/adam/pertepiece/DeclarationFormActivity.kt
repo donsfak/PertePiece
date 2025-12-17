@@ -5,6 +5,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView // Added TextView import
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -13,13 +14,9 @@ import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.Json // Added import for Json
-import kotlinx.serialization.decodeFromString // Added import for decodeFromString
+import kotlinx.serialization.decodeFromString
 
-// Data class for DocumentType, implied by the changes
-data class DocumentType(val id: Long, val name: String) {
-    override fun toString(): String = name // This is important for ArrayAdapter to display the name
-}
+// Data class moved to DocumentType.kt
 
 class DeclarationFormActivity : AppCompatActivity() {
 

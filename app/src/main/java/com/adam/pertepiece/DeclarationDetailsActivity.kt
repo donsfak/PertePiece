@@ -1,6 +1,7 @@
 package com.adam.pertepiece
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -75,14 +76,16 @@ class DeclarationDetailsActivity : AppCompatActivity() {
         }
 
         // 6. Action: Delete
+        // 6. Action: Delete
         btnDelete.setOnClickListener {
+            Toast.makeText(this, "Confirmation suppression...", Toast.LENGTH_SHORT).show()
             AlertDialog.Builder(this)
-                .setTitle("Supprimer")
-                .setMessage("Voulez-vous vraiment supprimer cette déclaration ?")
-                .setPositiveButton("Oui") { _, _ ->
+                .setTitle("Suppression")
+                .setMessage("Confirmez-vous la suppression ?")
+                .setPositiveButton("OUI") { _, _ ->
                     deleteDeclaration()
                 }
-                .setNegativeButton("Non", null)
+                .setNegativeButton("NON", null)
                 .show()
         }
     }
@@ -134,17 +137,35 @@ class DeclarationDetailsActivity : AppCompatActivity() {
     }
 
     private fun deleteDeclaration() {
+        if (declarationId.isEmpty()) {
+             Toast.makeText(this, "Erreur: ID manquant", Toast.LENGTH_SHORT).show()
+             return
+        }
         lifecycleScope.launch {
             try {
+                // 1. Attempt Delete
                 SupabaseClient.client.from("declarations").delete {
                     filter {
                         eq("id", declarationId)
                     }
                 }
-                Toast.makeText(this@DeclarationDetailsActivity, "Déclaration supprimée", Toast.LENGTH_SHORT).show()
-                finish()
+                
+                // 2. Verify if it's actually gone
+                val check = SupabaseClient.client.from("declarations").select {
+                    filter { eq("id", declarationId) }
+                    count(io.github.jan.supabase.postgrest.query.Count.EXACT)
+                }.decodeList<Declaration>()
+                
+                if (check.isNotEmpty()) {
+                    // It's still there!
+                    Toast.makeText(this@DeclarationDetailsActivity, "Erreur: Impossible de supprimer. Vérifiez les politiques RLS sur Supabase (DELETE policy).", Toast.LENGTH_LONG).show()
+                } else {
+                    // Success
+                    Toast.makeText(this@DeclarationDetailsActivity, "Déclaration supprimée avec succès", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
             } catch (e: Exception) {
-                Toast.makeText(this@DeclarationDetailsActivity, "Erreur: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@DeclarationDetailsActivity, "Echec suppression: ${e.message}", Toast.LENGTH_LONG).show()
                 e.printStackTrace()
             }
         }

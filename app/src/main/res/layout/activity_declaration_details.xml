@@ -209,6 +209,7 @@
                     app:strokeColor="#F44336"
                     app:strokeWidth="1dp"
                     app:cornerRadius="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/btnMarkFound" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

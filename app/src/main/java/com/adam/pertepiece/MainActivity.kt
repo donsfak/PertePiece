@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast // Added import
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,22 +56,19 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
-        // 4. Fetch Data
-        fetchDeclarations()
-
-        // 5. Action : Nouvelle déclaration
+        // 4. Action : Nouvelle déclaration
         fabAdd.setOnClickListener {
             val intent = Intent(this, DeclarationFormActivity::class.java)
             startActivity(intent)
         }
         
-        // 6. Action : Profile/Logout via Avatar
+        // 5. Action : Profile/Logout via Avatar
         avatarIcon.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
         }
         
-        // 7. Search Logic
+        // 6. Search Logic
         searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 filterList(query)
@@ -131,6 +129,9 @@ class MainActivity : AppCompatActivity() {
     private fun fetchDeclarations() {
         lifecycleScope.launch {
             try {
+                // VISUAL FEEDBACK: Clear list so we know it's trying to load
+                adapter.updateList(emptyList()) 
+                
                 // On récupère uniquement les déclarations de l'utilisateur connecté
                 val userId = SupabaseClient.client.auth.currentUserOrNull()?.id ?: return@launch
                 
@@ -139,21 +140,18 @@ class MainActivity : AppCompatActivity() {
                         filter {
                             eq("user_id", userId)
                         }
-                        // To allow filtering locally properly, we fetch all.
-                        // Order by latest might be nice
                         order(column = "created_at", order = Order.DESCENDING) 
                     }.decodeList<Declaration>()
 
-                allDeclarations = list // Update the source list
-                
-                // Reset search view filter if needed, or re-apply current filter?
-                // For simplicity, just show all initially on refresh
+                allDeclarations = list 
                 adapter.updateList(list)
                 showEmptyState(list.isEmpty())
                 
+                // DEBUG TOAST
+                // Toast.makeText(this@MainActivity, "Refresh: ${list.size} items", Toast.LENGTH_SHORT).show()
+                
             } catch (e: Exception) {
-                // En cas d'erreur (réseau...), on peut afficher un Toast
-                // Toast.makeText(this@MainActivity, "Erreur chargement: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Erreur chargement: ${e.message}", Toast.LENGTH_LONG).show()
                 e.printStackTrace()
             }
         }
