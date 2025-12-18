@@ -14,10 +14,12 @@
         android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.PertePiece">
+
         <activity
             android:name=".SignUpActivity"
             android:exported="false"
             android:theme="@style/Theme.PertePiece.Login" />
+
         <activity
             android:name=".DeclarationFormActivity"
             android:exported="false" />
@@ -30,6 +32,21 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.PertePiece.Login">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="pertepiece" android:host="login-callback" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".LoginActivity"
             android:exported="true"
@@ -37,7 +54,6 @@
             android:theme="@style/Theme.PertePiece.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -6,7 +6,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.github.jan.supabase.gotrue.auth
@@ -69,22 +68,21 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, SignUpActivity::class.java))
         }
 
-        // 3. Mot de passe oublié (NOUVEAU)
+        // 3. Mot de passe oublié
         tvForgotPassword.setOnClickListener {
             showResetPasswordDialog()
         }
     }
 
-    // Fonction pour afficher la popup
     private fun showResetPasswordDialog() {
         val inputResetEmail = EditText(this)
         inputResetEmail.hint = "Entrez votre email"
         val padding = 50
         inputResetEmail.setPadding(padding, padding, padding, padding)
 
-        AlertDialog.Builder(this)
+        androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle("Mot de passe oublié")
-            .setMessage("Entrez votre email pour recevoir un lien de réinitialisation.")
+            .setMessage("Nous allons vous envoyer un lien pour réinitialiser votre mot de passe.")
             .setView(inputResetEmail)
             .setPositiveButton("Envoyer") { _, _ ->
                 val email = inputResetEmail.text.toString()
@@ -99,7 +97,12 @@ class LoginActivity : AppCompatActivity() {
     private fun sendResetEmail(email: String) {
         lifecycleScope.launch {
             try {
-                SupabaseClient.client.auth.resetPasswordForEmail(email)
+                // CORRECTION : On passe redirectUrl directement en paramètre, pas entre accolades
+                SupabaseClient.client.auth.resetPasswordForEmail(
+                    email = email,
+                    redirectUrl = "pertepiece://login-callback"
+                )
+
                 Toast.makeText(this@LoginActivity, "Email envoyé ! Vérifiez vos spams.", Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
                 Toast.makeText(this@LoginActivity, "Erreur: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -107,3 +110,4 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 }
+
