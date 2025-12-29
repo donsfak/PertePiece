@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"> <!-- Dark background for the very top/behind -->
+    android:background="#121212">
 
-    <!-- Header Image/Background -->
     <ImageView
         android:id="@+id/headerImage"
         android:layout_width="match_parent"
@@ -27,7 +26,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-    
+
     <ImageButton
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -39,7 +38,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- ScrollView for Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -53,7 +51,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- The white overlapping container -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,23 +58,20 @@
                 android:paddingHorizontal="24dp"
                 android:paddingBottom="32dp">
 
-                <!-- Avatar/Icon in the middle top -->
                 <ImageView
                     android:id="@+id/imgAvatar"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
+                    android:layout_marginTop="-40dp"
                     android:background="@drawable/bg_input_field"
+                    android:elevation="4dp"
                     android:padding="4dp"
                     android:src="@android:drawable/ic_input_add"
-                    app:tint="@color/brand_blue"
-                    android:layout_marginTop="-40dp"
-                    android:elevation="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/brand_blue" />
 
-                <!-- Form Fields -->
-                
                 <TextView
                     android:id="@+id/labelDoc"
                     android:layout_width="wrap_content"
@@ -88,7 +82,7 @@
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/imgAvatar" />
-                
+
                 <FrameLayout
                     android:id="@+id/layoutSpinner"
                     android:layout_width="match_parent"
@@ -96,20 +90,20 @@
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input_field"
                     app:layout_constraintTop_toBottomOf="@+id/labelDoc">
-                    
+
                     <Spinner
                         android:id="@+id/spinnerDocType"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@null"/>
-                        
+                        android:background="@null" />
+
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
                         android:layout_marginEnd="16dp"
                         android:src="@android:drawable/arrow_down_float"
-                        app:tint="@color/text_hint"/>
+                        app:tint="@color/text_hint" />
                 </FrameLayout>
 
                 <TextView
@@ -134,16 +128,16 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     app:layout_constraintTop_toBottomOf="@+id/labelDate" />
-                    
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@android:drawable/ic_menu_my_calendar"
-                    app:tint="@color/text_hint"
                     android:layout_marginEnd="16dp"
+                    android:src="@android:drawable/ic_menu_my_calendar"
                     app:layout_constraintBottom_toBottomOf="@+id/inputDate"
                     app:layout_constraintEnd_toEndOf="@+id/inputDate"
-                    app:layout_constraintTop_toTopOf="@+id/inputDate"/>
+                    app:layout_constraintTop_toTopOf="@+id/inputDate"
+                    app:tint="@color/text_hint" />
 
                 <TextView
                     android:id="@+id/labelLocation"
@@ -189,28 +183,54 @@
                     android:hint="Tell us what happened..."
                     android:inputType="textMultiLine"
                     android:padding="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/labelDescription" />
+
+                <Button
+                    android:id="@+id/btnSelectImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:backgroundTint="#FF9800"
+                    android:text="Ajouter une photo"
+                    android:textColor="#FFFFFF"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/inputDescription" />
+
+                <ImageView
+                    android:id="@+id/ivPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#E0E0E0"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnSelectImage" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSubmit"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="24dp"
                     android:background="@drawable/bg_button_teal"
                     android:text="Save Declaration"
                     android:textAllCaps="false"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:backgroundTint="@null"
-                    app:layout_constraintTop_toBottomOf="@+id/inputDescription" />
+                    app:layout_constraintTop_toBottomOf="@+id/ivPreview" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-            
-            <!-- Spacer to allow scrolling past the end -->
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="50dp"/>
 
         </LinearLayout>
+
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

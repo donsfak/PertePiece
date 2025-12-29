@@ -1,28 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Original colors -->
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- ═══════════════════════════════════════════════════════════════
+         PertePiece - Complete Color Palette
+         A calming, professional palette for stressed users
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- ─────────────────────────────────────────────────────────────────
+         PRIMARY COLORS - "Confidence" (Deep Teal)
+         Used for: AppBar, primary branding, trust-building elements
+         ───────────────────────────────────────────────────────────────── -->
+    <color name="primary">#115E59</color>
+    <color name="primary_dark">#0D3D3A</color>
+    <color name="primary_light">#14B8A6</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#CCFBF1</color>
+    <color name="on_primary_container">#042F2E</color>
+
+    <!-- ─────────────────────────────────────────────────────────────────
+         SECONDARY COLORS - "Action" (Coral Orange)
+         Used for: CTAs, important buttons, highlights
+         ───────────────────────────────────────────────────────────────── -->
+    <color name="secondary">#F97316</color>
+    <color name="secondary_dark">#EA580C</color>
+    <color name="secondary_light">#FB923C</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_container">#FFEDD5</color>
+    <color name="on_secondary_container">#7C2D12</color>
+
+    <!-- ─────────────────────────────────────────────────────────────────
+         SURFACE & BACKGROUND COLORS
+         Soft, calming backgrounds to reduce eye strain
+         ───────────────────────────────────────────────────────────────── -->
+    <color name="background">#F8FAFC</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F1F5F9</color>
+    <color name="on_background">#0F172A</color>
+    <color name="on_surface">#0F172A</color>
+    <color name="on_surface_variant">#64748B</color>
+    <color name="outline">#CBD5E1</color>
+    <color name="outline_variant">#E2E8F0</color>
+
+    <!-- ─────────────────────────────────────────────────────────────────
+         INPUT FIELD COLORS
+         ───────────────────────────────────────────────────────────────── -->
+    <color name="input_background">#F1F5F9</color>
+    <color name="input_background_focused">#FFFFFF</color>
+    <color name="input_stroke">#E2E8F0</color>
+    <color name="input_stroke_focused">#115E59</color>
+    <color name="input_stroke_error">#EF4444</color>
+
+    <!-- ─────────────────────────────────────────────────────────────────
+         TEXT COLORS
+         Clear hierarchy for easy reading
+         ───────────────────────────────────────────────────────────────── -->
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="text_hint">#94A3B8</color>
+    <color name="text_disabled">#CBD5E1</color>
+    <color name="text_on_dark">#FFFFFF</color>
+    <color name="text_link">#14B8A6</color>
+
+    <!-- ─────────────────────────────────────────────────────────────────
+         STATUS BADGE COLORS
+         Clear visual feedback for declaration states
+         ───────────────────────────────────────────────────────────────── -->
+    <color name="status_pending">#F59E0B</color>
+    <color name="status_pending_background">#FEF3C7</color>
+    <color name="status_found">#10B981</color>
+    <color name="status_found_background">#D1FAE5</color>
+    <color name="status_lost">#EF4444</color>
+    <color name="status_lost_background">#FEE2E2</color>
+    <color name="status_processing">#3B82F6</color>
+    <color name="status_processing_background">#DBEAFE</color>
+
+    <!-- ─────────────────────────────────────────────────────────────────
+         UTILITY COLORS
+         ───────────────────────────────────────────────────────────────── -->
+    <color name="divider">#E2E8F0</color>
+    <color name="ripple_light">#1A115E59</color>
+    <color name="ripple_dark">#33FFFFFF</color>
+    <color name="scrim">#80000000</color>
+    <color name="shadow">#1A000000</color>
+    <color name="image_placeholder">#E2E8F0</color>
+
+    <!-- ─────────────────────────────────────────────────────────────────
+         SEMANTIC COLORS (Success, Warning, Error, Info)
+         ───────────────────────────────────────────────────────────────── -->
+    <color name="success">#10B981</color>
+    <color name="success_light">#D1FAE5</color>
+    <color name="warning">#F59E0B</color>
+    <color name="warning_light">#FEF3C7</color>
+    <color name="error">#EF4444</color>
+    <color name="error_light">#FEE2E2</color>
+    <color name="info">#3B82F6</color>
+    <color name="info_light">#DBEAFE</color>
+
+    <!-- Legacy colors for backward compatibility -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="brand_blue">@color/primary</color>
+    <color name="brand_blue_dark">@color/primary_dark</color>
+    <color name="brand_blue_light">@color/primary_light</color>
     
-    <!-- Brand Colors -->
-    <color name="brand_blue">#1E88E5</color>
-    <color name="brand_blue_dark">#1565C0</color>
-    <color name="brand_blue_light">#64B5F6</color>
-    
-    <!-- Login Screen Colors -->
-    <color name="login_background">#FFFFFF</color>
-    <color name="login_card_background">#F8FAFC</color>
-    <color name="input_background">#F5F7FA</color>
-    <color name="input_stroke">#E3E8EF</color>
-    <color name="input_stroke_focused">#1E88E5</color>
-    
-    <!-- Text Colors -->
-    <color name="text_primary">#1A202C</color>
-    <color name="text_secondary">#64748B</color>
-    <color name="text_hint">#9E9E9E</color>
+    <!-- Legacy colors still referenced in existing layouts -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">@color/primary_dark</color>
+    <color name="teal_200">@color/primary_light</color>
+    <color name="teal_700">@color/primary</color>
+    <color name="login_background">@color/background</color>
+    <color name="login_card_background">@color/surface</color>
 </resources>

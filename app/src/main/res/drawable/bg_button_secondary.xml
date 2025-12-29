@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Primary Action Button with Ripple Effect
-     Coral Orange with rounded pill shape (24dp corners)
-     Used for main CTAs like "Submit", "Search", "Confirm" -->
+<!-- Secondary/Outlined Button with Ripple Effect
+     Deep Teal outline with transparent fill
+     Used for secondary actions like "Cancel", "Skip", "View Details" -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/ripple_dark">
+    android:color="@color/ripple_light">
 
     <item android:id="@android:id/mask">
         <shape android:shape="rectangle">
@@ -17,32 +17,44 @@
             <!-- Disabled State -->
             <item android:state_enabled="false">
                 <shape android:shape="rectangle">
-                    <solid android:color="@color/text_disabled" />
+                    <solid android:color="@android:color/transparent" />
                     <corners android:radius="24dp" />
+                    <stroke
+                        android:width="1.5dp"
+                        android:color="@color/text_disabled" />
                 </shape>
             </item>
 
             <!-- Pressed State -->
             <item android:state_pressed="true">
                 <shape android:shape="rectangle">
-                    <solid android:color="@color/secondary_dark" />
+                    <solid android:color="@color/primary_container" />
                     <corners android:radius="24dp" />
+                    <stroke
+                        android:width="1.5dp"
+                        android:color="@color/primary_dark" />
                 </shape>
             </item>
 
             <!-- Focused State -->
             <item android:state_focused="true">
                 <shape android:shape="rectangle">
-                    <solid android:color="@color/secondary_light" />
+                    <solid android:color="@color/primary_container" />
                     <corners android:radius="24dp" />
+                    <stroke
+                        android:width="1.5dp"
+                        android:color="@color/primary" />
                 </shape>
             </item>
 
             <!-- Default State -->
             <item>
                 <shape android:shape="rectangle">
-                    <solid android:color="@color/secondary" />
+                    <solid android:color="@android:color/transparent" />
                     <corners android:radius="24dp" />
+                    <stroke
+                        android:width="1.5dp"
+                        android:color="@color/primary" />
                 </shape>
             </item>
         </selector>

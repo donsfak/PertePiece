@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Elevated Card Background
+     White surface with 16dp rounded corners
+     Use with CardView for consistent elevated surfaces -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="@color/surface" />
+    <corners android:radius="16dp" />
+
+</shape>

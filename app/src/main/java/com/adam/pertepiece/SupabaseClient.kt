@@ -15,7 +15,7 @@ object SupabaseClient {
         supabaseKey = SUPABASE_KEY
     ) {
         install(Postgrest)
-        install(Auth)    // <-- On utilise Auth ici, pas GoTrue
+        install(Auth)
         install(Storage)
     }
 }

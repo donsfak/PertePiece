@@ -81,31 +81,37 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-    
+
     private fun filterList(query: String?) {
-        if (query.isNullOrEmpty()) {
+        // Si la recherche est vide, on réaffiche tout
+        if (query.isNullOrBlank()) {
             adapter.updateList(allDeclarations)
-            showEmptyState(allDeclarations.isEmpty())
+            recyclerView.visibility = if (allDeclarations.isNotEmpty()) View.VISIBLE else View.GONE
             return
         }
 
         val lowerQuery = query.lowercase().trim()
-        val filteredList = allDeclarations.filter {
-            val docName = getDocName(it.documentTypeId).lowercase()
-            val location = it.incidentLocation.lowercase()
-            
+
+        val filteredList = allDeclarations.filter { declaration ->
+            // On récupère les valeurs en mode sécurisé (si null, on met "")
+            // Note: Assure-toi que getDocName accepte un Long? ou gère le cas ici
+            val docId = declaration.documentTypeId ?: 0L
+            val docName = getDocName(docId).lowercase()
+
+            val location = (declaration.incidentLocation ?: "").lowercase()
+
+            // On vérifie si ça matche
             docName.contains(lowerQuery) || location.contains(lowerQuery)
         }
-        
+
         adapter.updateList(filteredList)
-        // If search yields no results, we might want to show a different empty state (e.g. "No results")
-        // For now, standard empty state is fine, or we keep it simple.
+
+        // Gestion de l'affichage vide/plein
         if (filteredList.isEmpty()) {
-            // Optional: could show a "No results found" text instead of generic empty state
-             recyclerView.visibility = View.GONE
+            recyclerView.visibility = View.GONE
+            // Tu peux afficher une vue "Aucun résultat" ici si tu en as une
         } else {
-             recyclerView.visibility = View.VISIBLE
-             emptyStateView.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
         }
     }
     

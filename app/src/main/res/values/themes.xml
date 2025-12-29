@@ -1,25 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.PertePiece" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/brand_blue</item>
-        <item name="colorPrimaryVariant">@color/brand_blue_dark</item>
-        <item name="colorOnPrimary">@color/white</item>
 
-        <item name="colorSecondary">@color/brand_blue_light</item>
-        <item name="colorSecondaryVariant">@color/brand_blue</item>
-        <item name="colorOnSecondary">@color/white</item>
+    <!-- ═══════════════════════════════════════════════════════════════
+         Base Application Theme
+         Material 3 styling with custom color palette
+         ═══════════════════════════════════════════════════════════════ -->
+    <style name="Base.Theme.PertePiece" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand colors -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorPrimaryContainer">@color/primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
 
-        <item name="android:statusBarColor">@color/brand_blue_dark</item>
+        <!-- Secondary action colors -->
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondary_dark</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
+        <item name="colorSecondaryContainer">@color/secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/on_secondary_container</item>
+
+        <!-- Tertiary colors (uses primary light) -->
+        <item name="colorTertiary">@color/primary_light</item>
+        <item name="colorOnTertiary">@color/white</item>
+
+        <!-- Background and surface colors -->
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorSurfaceVariant">@color/surface_variant</item>
+        <item name="colorOnBackground">@color/on_background</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+
+        <!-- Outline colors -->
+        <item name="colorOutline">@color/outline</item>
+        <item name="colorOutlineVariant">@color/outline_variant</item>
+
+        <!-- Error colors -->
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="colorErrorContainer">@color/error_light</item>
+
+        <!-- System bar colors -->
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:navigationBarColor">@color/surface</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+
+        <!-- Default text appearance -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+
+        <!-- Button styles -->
+        <item name="materialButtonStyle">@style/Widget.PertePiece.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.PertePiece.Button.Outlined</item>
+
+        <!-- Card styles -->
+        <item name="materialCardViewStyle">@style/Widget.PertePiece.CardView</item>
+
+        <!-- Input styles -->
+        <item name="textInputStyle">@style/Widget.PertePiece.TextInputLayout</item>
     </style>
 
     <style name="Theme.PertePiece" parent="Base.Theme.PertePiece" />
-    
-    <!-- Login Screen Theme -->
-    <style name="Theme.PertePiece.Login" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/brand_blue</item>
-        <item name="colorPrimaryVariant">@color/brand_blue_dark</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="android:statusBarColor">@color/brand_blue</item>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Login/Auth Screen Theme
+         Light status bar variant for auth screens
+         ═══════════════════════════════════════════════════════════════ -->
+    <style name="Theme.PertePiece.Auth" parent="Theme.PertePiece">
+        <item name="android:statusBarColor">@color/primary</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Widget Styles
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Primary Button Style -->
+    <style name="Widget.PertePiece.Button" parent="Widget.Material3.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/secondary</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- Secondary/Outlined Button Style -->
+    <style name="Widget.PertePiece.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/primary</item>
+        <item name="strokeColor">@color/primary</item>
+        <item name="strokeWidth">1.5dp</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="rippleColor">@color/ripple_light</item>
+    </style>
+
+    <!-- Tonal Button Style -->
+    <style name="Widget.PertePiece.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:textColor">@color/primary_dark</item>
+        <item name="backgroundTint">@color/primary_container</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!-- Card View Style -->
+    <style name="Widget.PertePiece.CardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardBackgroundColor">@color/surface</item>
+        <item name="contentPadding">16dp</item>
+    </style>
+
+    <!-- Text Input Layout Style -->
+    <style name="Widget.PertePiece.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxStrokeColor">@color/input_stroke_focused</item>
+        <item name="boxBackgroundColor">@color/input_background</item>
+        <item name="hintTextColor">@color/text_secondary</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Text Appearance Styles
+         Clear typography hierarchy
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <style name="TextAppearance.PertePiece.Headline" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="TextAppearance.PertePiece.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextAppearance.PertePiece.Subtitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance.PertePiece.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+    </style>
+
+    <style name="TextAppearance.PertePiece.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance.PertePiece.Label" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.04</item>
+    </style>
+
+    <!-- Legacy theme alias for backward compatibility -->
+    <style name="Theme.PertePiece.Login" parent="Theme.PertePiece.Auth" />
+
 </resources>

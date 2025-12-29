@@ -64,6 +64,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("io.github.jan-tennert.supabase:storage-kt:3.0.0")
 
     // --- SUPABASE & NETWORK START ---
 
@@ -73,11 +74,13 @@ dependencies {
     // Les modules dont on a besoin
     implementation("io.github.jan-tennert.supabase:postgrest-kt") // Pour la Base de Données
     implementation("io.github.jan-tennert.supabase:gotrue-kt")    // Pour l'Authentification
-    implementation("io.github.jan-tennert.supabase:storage-kt")   // Pour l'Upload de photos
+    implementation("io.github.jan-tennert.supabase:storage-kt")
+    implementation("io.coil-kt:coil:2.6.0")//
 
     // Le moteur HTTP (Ktor) nécessaire pour que Supabase fonctionne
     implementation("io.ktor:ktor-client-android:2.3.12")
-
+    implementation("io.ktor:ktor-client-android:3.0.0")
+    implementation("io.ktor:ktor-client-core:3.0.0")
     // Pour transformer tes objets Kotlin en JSON
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 

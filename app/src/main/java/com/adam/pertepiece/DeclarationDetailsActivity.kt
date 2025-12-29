@@ -51,12 +51,13 @@ class DeclarationDetailsActivity : AppCompatActivity() {
         val btnBack = findViewById<ImageButton>(R.id.btnBack)
 
         // 3. Bind Data
-        tvDocType.text = getDocName(declaration.documentTypeId)
+// Si l'ID est null, on envoie 0 par défaut
+        tvDocType.text = getDocName(declaration.documentTypeId ?: 0L)
         tvDate.text = declaration.incidentDate
         tvLocation.text = declaration.incidentLocation
         tvDescription.text = declaration.description
-        updateStatusView(declaration.status)
-
+        // Si le statut est null, on considère qu'il est "EN_ATTENTE"
+        updateStatusView(declaration.status ?: "EN_ATTENTE")
         // 4. Action: Back
         btnBack.setOnClickListener { finish() }
 
@@ -125,7 +126,7 @@ class DeclarationDetailsActivity : AppCompatActivity() {
                         eq("id", declarationId)
                     }
                 }
-                
+
                 Toast.makeText(this@DeclarationDetailsActivity, "Statut mis à jour !", Toast.LENGTH_SHORT).show()
                 updateStatusView(newStatus)
                 // Optionally finish() if we want to return to list immediately
@@ -149,13 +150,13 @@ class DeclarationDetailsActivity : AppCompatActivity() {
                         eq("id", declarationId)
                     }
                 }
-                
+
                 // 2. Verify if it's actually gone
                 val check = SupabaseClient.client.from("declarations").select {
                     filter { eq("id", declarationId) }
                     count(io.github.jan.supabase.postgrest.query.Count.EXACT)
                 }.decodeList<Declaration>()
-                
+
                 if (check.isNotEmpty()) {
                     // It's still there!
                     Toast.makeText(this@DeclarationDetailsActivity, "Erreur: Impossible de supprimer. Vérifiez les politiques RLS sur Supabase (DELETE policy).", Toast.LENGTH_LONG).show()
