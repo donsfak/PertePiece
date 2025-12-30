@@ -1,11 +1,13 @@
 package com.adam.pertepiece
 
+import android.app.DatePickerDialog
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
@@ -18,16 +20,18 @@ import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import java.util.Calendar
+import java.util.Locale
 
 class DeclarationFormActivity : AppCompatActivity() {
 
     private var declarationIdToEdit: String? = null
 
-    // NOUVEAU : Variables pour l'image
+    // Variables pour l'image
     private var imageUri: Uri? = null
     private lateinit var ivPreview: ImageView
 
-    // NOUVEAU : Le sélecteur d'image (Galerie)
+    // Le sélecteur d'image (Galerie)
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
             imageUri = uri
@@ -46,11 +50,38 @@ class DeclarationFormActivity : AppCompatActivity() {
         val inputLocation = findViewById<EditText>(R.id.inputLocation)
         val inputDescription = findViewById<EditText>(R.id.inputDescription)
         val btnSubmit = findViewById<Button>(R.id.btnSubmit)
-        val headerTitle = findViewById<TextView>(R.id.headerTitle)
-
-        // NOUVEAU : Liaison des éléments image
+        val headerTitle = findViewById<TextView>(R.id.tvHeaderTitle)
         val btnSelectImage = findViewById<Button>(R.id.btnSelectImage)
+        val btnBack = findViewById<ImageButton>(R.id.btnBack)
+
         ivPreview = findViewById(R.id.ivPreview)
+
+        // --- CORRECTION : CALENDRIER INTELLIGENT (Une seule fois !) ---
+        inputDate.setOnClickListener {
+            // A. On récupère la date actuelle
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            // B. On ouvre la fenêtre de calendrier
+            val datePickerDialog = DatePickerDialog(
+                this,
+                { _, selectedYear, selectedMonth, selectedDay ->
+                    // C. Quand l'utilisateur choisit, on formate : JJ/MM/AAAA
+                    val formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear)
+
+                    // D. On écrit le résultat dans le champ
+                    inputDate.setText(formattedDate)
+                },
+                year, month, day
+            )
+
+            // (Optionnel) Empêcher de choisir une date dans le futur
+            datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+
+            datePickerDialog.show()
+        }
 
         // 2. Remplir le menu déroulant
         val docTypes = listOf(
@@ -63,6 +94,11 @@ class DeclarationFormActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, docTypes)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
+
+        // Action bouton retour
+        btnBack.setOnClickListener {
+            finish()
+        }
 
         // 3. CHECK EDIT MODE (Mode Modification)
         val editJson = intent.getStringExtra("EDIT_DECLARATION_JSON")
@@ -82,12 +118,9 @@ class DeclarationFormActivity : AppCompatActivity() {
             // Changement des textes
             btnSubmit.text = "Mettre à jour"
             headerTitle.text = "Modifier la Déclaration"
-
-            // Note: Pour afficher l'image existante ici, il faudrait utiliser Coil.
-            // Pour l'instant, on laisse l'utilisateur en choisir une nouvelle s'il veut changer.
         }
 
-        // 4. NOUVEAU : Clic sur "Ajouter une photo"
+        // 4. Clic sur "Ajouter une photo"
         btnSelectImage.setOnClickListener {
             pickImage.launch("image/*") // Ouvre la galerie
         }

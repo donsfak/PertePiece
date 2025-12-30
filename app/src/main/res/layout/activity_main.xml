@@ -1,113 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:background="@color/background">
 
-    <!-- Custom Header -->
     <View
-        android:id="@+id/headerBackground"
+        android:id="@+id/headerView"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="@color/purple_700"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_height="180dp"
+        android:background="@color/primary"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvAppTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="24dp"
-        android:text="Mes Declarations"
-        android:textColor="#FFFFFF"
-        android:textSize="28sp"
+        android:text="PertePiece"
+        android:textColor="@color/on_primary"
+        android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/headerBackground"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginTop="48dp"
+        android:layout_marginStart="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/avatarIcon"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btnProfile"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@android:drawable/ic_menu_my_calendar"
-        app:tint="#FFFFFF"
-        android:background="@drawable/bg_input_field"
-        android:padding="8dp"
+        app:cardCornerRadius="20dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/headerBackground"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!-- Search Bar -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/searchContainer"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="-25dp"
-        app:cardCornerRadius="25dp"
-        app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@+id/headerBackground">
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
+        app:cardBackgroundColor="#30FFFFFF"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvAppTitle"
+        app:layout_constraintBottom_toBottomOf="@+id/tvAppTitle">
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:iconifiedByDefault="false"
-            app:queryBackground="@android:color/transparent"
-            app:queryHint="Rechercher (Lieu, Type)..." />
+            android:padding="8dp"
+            android:src="@android:drawable/ic_menu_my_calendar"
+            app:tint="@color/on_primary"/>
     </androidx.cardview.widget.CardView>
 
-    <!-- Content -->
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/searchCard"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="6dp"
+        app:layout_constraintTop_toBottomOf="@+id/tvAppTitle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_search"
+                app:tint="@color/text_secondary"/>
+
+            <EditText
+                android:id="@+id/searchEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="Rechercher (Lieu, Type...)"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:layout_marginStart="12dp"
+                android:inputType="text"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewDeclarations"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:paddingHorizontal="16dp"
+        android:layout_marginTop="16dp"
         android:clipToPadding="false"
-        android:scaleX="1.0"
-        app:layout_constraintTop_toBottomOf="@+id/searchContainer"
+        android:paddingTop="8dp"
+        android:paddingBottom="80dp"
+        android:paddingHorizontal="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone"/>
-
-    <LinearLayout
-        android:id="@+id/emptyStateView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerBackground">
-
-        <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@android:drawable/ic_menu_edit"
-            app:tint="#E0E0E0" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="No declarations yet"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#BDBDBD"/>
-        
-        <TextView
-             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Tap the + button to add one"
-            android:textColor="#BDBDBD"/>
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/searchCard"
+        tools:listitem="@layout/item_declaration"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
@@ -115,9 +101,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
         android:src="@android:drawable/ic_input_add"
-        app:tint="@android:color/white"
-        app:backgroundTint="#00BFA5"
+        app:backgroundTint="@color/secondary"
+        app:tint="@color/on_secondary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
