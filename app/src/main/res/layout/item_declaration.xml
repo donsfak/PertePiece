@@ -1,18 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     Declaration Item Card
-     Modern, clean card design for the declarations RecyclerView
-     
-     Layout Structure:
-     ┌──────────────────────────────────────────────────────────────────────────┐
-     │  ┌────────────┐   Title (Bold, 16sp)                    ┌─────────────┐  │
-     │  │            │                                         │   BADGE     │  │
-     │  │   IMAGE    │   📍 Location (Secondary)               └─────────────┘  │
-     │  │   88x88    │                                                          │
-     │  │            │   📅 Date (Caption)                                      │
-     │  └────────────┘                                                          │
-     └──────────────────────────────────────────────────────────────────────────┘
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -22,26 +8,25 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
     android:layout_marginTop="8dp"
-    android:layout_marginBottom="4dp"
+    android:layout_marginBottom="8dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
-    app:cardBackgroundColor="@color/surface"
+    app:cardBackgroundColor="@android:color/white"
     app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
+    app:cardElevation="2dp"
     app:strokeWidth="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="12dp">
 
-        <!-- Image Container with Rounded Corners -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardImageContainer"
-            android:layout_width="88dp"
-            android:layout_height="88dp"
-            app:cardBackgroundColor="@color/image_placeholder"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:cardBackgroundColor="#F5F5F5"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp"
@@ -53,85 +38,85 @@
                 android:id="@+id/ivItemImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:contentDescription="@string/app_name"
+                android:contentDescription="Photo objet"
                 android:scaleType="centerCrop"
-                tools:src="@android:drawable/ic_menu_gallery" />
+                tools:scaleType="centerInside"
+                tools:src="@android:drawable/ic_menu_gallery"
+                tools:tint="#BDBDBD" />
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Status Badge - Top Right -->
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_status_badge"
             android:fontFamily="sans-serif-medium"
-            android:paddingHorizontal="12dp"
+            android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
             android:textAllCaps="true"
-            android:textColor="@color/status_pending"
+            android:textColor="#FF9800"
             android:textSize="10sp"
-            android:letterSpacing="0.04"
+            android:letterSpacing="0.05"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="EN ATTENTE" />
+            tools:text="EN ATTENTE"
+            tools:backgroundTint="#FFF3E0"/>
 
-        <!-- Title - Document Type -->
         <TextView
             android:id="@+id/tvDocType"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:fontFamily="sans-serif-medium"
-            android:maxLines="2"
-            android:textColor="@color/text_primary"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
             android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@id/tvStatus"
             app:layout_constraintStart_toEndOf="@id/cardImageContainer"
+            app:layout_constraintEnd_toStartOf="@id/tvStatus"
             app:layout_constraintTop_toTopOf="@id/cardImageContainer"
-            tools:text="Carte Nationale d'Identité" />
+            tools:text="Passeport Biométrique" />
 
-        <!-- Location with Icon -->
         <TextView
             android:id="@+id/tvLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="16dp"
-            android:drawablePadding="6dp"
+            android:drawablePadding="4dp"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:textColor="@color/text_secondary"
+            android:textColor="#757575"
             android:textSize="13sp"
             app:drawableStartCompat="@android:drawable/ic_menu_mylocation"
-            app:drawableTint="@color/text_hint"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:drawableTint="#9E9E9E"
             app:layout_constraintStart_toEndOf="@id/cardImageContainer"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvDocType"
-            tools:text="Gare Centrale, Paris" />
+            tools:text="Abidjan, Cocody" />
 
-        <!-- Date with Icon -->
         <TextView
             android:id="@+id/tvDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="2dp"
             android:layout_marginEnd="16dp"
-            android:drawablePadding="6dp"
+            android:drawablePadding="4dp"
             android:gravity="center_vertical"
-            android:textColor="@color/text_hint"
+            android:textColor="#9E9E9E"
             android:textSize="12sp"
             app:drawableStartCompat="@android:drawable/ic_menu_recent_history"
-            app:drawableTint="@color/text_hint"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:drawableTint="#9E9E9E"
             app:layout_constraintStart_toEndOf="@id/cardImageContainer"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvLocation"
-            tools:text="29 décembre 2024" />
+            tools:text="05 Janv. 2026" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

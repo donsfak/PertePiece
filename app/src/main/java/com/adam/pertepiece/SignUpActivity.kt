@@ -10,8 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
-import io.github.jan.supabase.postgrest.from
+// import io.github.jan.supabase.postgrest.from // Plus besoin de ça ici
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -19,7 +21,7 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
 
-        val inputName = findViewById<EditText>(R.id.inputName) // Nouveau
+        val inputName = findViewById<EditText>(R.id.inputName)
         val inputEmail = findViewById<EditText>(R.id.inputEmail)
         val inputPassword = findViewById<EditText>(R.id.inputPassword)
         val cbPolicy = findViewById<CheckBox>(R.id.cbPolicy)
@@ -31,7 +33,6 @@ class SignUpActivity : AppCompatActivity() {
             val email = inputEmail.text.toString()
             val pwd = inputPassword.text.toString()
 
-            // Vérifications basiques
             if (!cbPolicy.isChecked) {
                 Toast.makeText(this, "Veuillez accepter les conditions.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -43,25 +44,23 @@ class SignUpActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    // ÉTAPE 1 : Créer le compte Auth (Email/Mdp)
+                    // ÉTAPE UNIQUE : Créer le compte et envoyer le nom en "metadata"
                     SupabaseClient.client.auth.signUpWith(Email) {
                         this.email = email
                         this.password = pwd
+
+                        // C'est ICI la magie : on envoie le nom dans les données
+                        // Le trigger SQL va lire ce "full_name" pour créer le profil automatiquement
+                        this.data = buildJsonObject {
+                            put("full_name", name)
+                        }
                     }
 
-                    // ÉTAPE 2 : Récupérer l'ID du nouvel utilisateur
-                    val userId = SupabaseClient.client.auth.currentUserOrNull()?.id
+                    // Plus besoin de l'étape 2 et 3 !
+                    // Le trigger SQL a déjà créé le profil grâce aux data ci-dessus.
 
-                    if (userId != null) {
-                        // ÉTAPE 3 : Sauvegarder le NOM dans la table 'profiles'
-                        val newProfile = Profile(id = userId, fullName = name)
-                        SupabaseClient.client.from("profiles").insert(newProfile)
-
-                        Toast.makeText(this@SignUpActivity, "Compte créé avec succès !", Toast.LENGTH_LONG).show()
-                        finish() // Retour au login
-                    } else {
-                        throw Exception("Erreur lors de la récupération de l'ID utilisateur.")
-                    }
+                    Toast.makeText(this@SignUpActivity, "Compte créé avec succès !", Toast.LENGTH_LONG).show()
+                    finish() // Retour au login
 
                 } catch (e: Exception) {
                     Toast.makeText(this@SignUpActivity, "Erreur: ${e.message}", Toast.LENGTH_LONG).show()
