@@ -232,13 +232,13 @@ function LoginPage({ onLogin, isLoading, onSignUpSuccess, setRegistering }) {
   const showLoading = isLoading || localLoading
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Login/SignUp Card */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 transition-all">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-primary-500/30 mb-4">
+            <div className="w-20 h-20 bg-linear-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-primary-500/30 mb-4">
               <FileSearch className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">PertePiece</h1>
@@ -340,7 +340,7 @@ function LoginPage({ onLogin, isLoading, onSignUpSuccess, setRegistering }) {
             <button
               type="submit"
               disabled={showLoading}
-              className="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {showLoading ? (
                 <>
@@ -819,8 +819,31 @@ function App() {
     }
   }
 
-  const handleSaveSettings = () => {
-    showToast('Paramètres enregistrés avec succès', 'success')
+  // Save settings - Update profile in database
+  const handleSaveSettings = async () => {
+    if (!session?.user?.id) {
+      showToast('Erreur: Session non valide', 'error')
+      return
+    }
+
+    if (!adminName.trim()) {
+      showToast('Le nom ne peut pas être vide', 'error')
+      return
+    }
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ full_name: adminName.trim() })
+        .eq('id', session.user.id)
+
+      if (error) throw error
+
+      showToast('Profil mis à jour avec succès', 'success')
+    } catch (error) {
+      console.error('Erreur mise à jour profil:', error)
+      showToast('Erreur lors de la mise à jour: ' + error.message, 'error')
+    }
   }
 
   const menuItems = [
@@ -852,7 +875,7 @@ function App() {
 
   if (authLoading && !session) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center">
         <div className="text-center">
           <RefreshCw className="w-10 h-10 text-white animate-spin mx-auto mb-4" />
           <p className="text-white/80">Chargement...</p>
@@ -874,7 +897,7 @@ function App() {
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Déclarations</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.total}</p>
             </div>
-            <div className="w-14 h-14 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-linear-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center">
               <FileText className="w-7 h-7 text-primary-600" />
             </div>
           </div>
@@ -889,7 +912,7 @@ function App() {
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Objets Retrouvés</p>
               <p className="text-3xl font-bold text-emerald-600 mt-1">{stats.found}</p>
             </div>
-            <div className="w-14 h-14 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-linear-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center">
               <CheckCircle2 className="w-7 h-7 text-emerald-600" />
             </div>
           </div>
@@ -907,7 +930,7 @@ function App() {
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">En Attente</p>
               <p className="text-3xl font-bold text-amber-600 mt-1">{stats.pending}</p>
             </div>
-            <div className="w-14 h-14 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-linear-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center">
               <Clock className="w-7 h-7 text-amber-600" />
             </div>
           </div>
@@ -1059,7 +1082,7 @@ function App() {
       <div className="mt-8 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/50 dark:to-blue-800/50 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-linear-to-br from-blue-100 to-blue-200 dark:from-blue-900/50 dark:to-blue-800/50 rounded-xl flex items-center justify-center">
               <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
@@ -1158,7 +1181,7 @@ function App() {
                   <tr key={user.userId}>
                     <td>
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        <div className="w-10 h-10 bg-linear-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
                           <User className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col">
@@ -1222,7 +1245,7 @@ function App() {
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/50 dark:to-primary-800/50 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-linear-to-br from-primary-100 to-primary-200 dark:from-primary-900/50 dark:to-primary-800/50 rounded-xl flex items-center justify-center">
               <TrendingUp className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
@@ -1239,7 +1262,7 @@ function App() {
               </div>
               <div className="progress-bar">
                 <div 
-                  className="progress-fill bg-gradient-to-r from-amber-400 to-amber-500"
+                  className="progress-fill bg-linear-to-r from-amber-400 to-amber-500"
                   style={{ width: `${lostPercentage}%` }}
                 />
               </div>
@@ -1253,7 +1276,7 @@ function App() {
               </div>
               <div className="progress-bar">
                 <div 
-                  className="progress-fill bg-gradient-to-r from-emerald-400 to-emerald-500"
+                  className="progress-fill bg-linear-to-r from-emerald-400 to-emerald-500"
                   style={{ width: `${foundPercentage}%` }}
                 />
               </div>
@@ -1264,7 +1287,7 @@ function App() {
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-accent-100 to-accent-200 dark:from-accent-900/50 dark:to-accent-800/50 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-linear-to-br from-accent-100 to-accent-200 dark:from-accent-900/50 dark:to-accent-800/50 rounded-xl flex items-center justify-center">
               <MapPin className="w-5 h-5 text-accent-600 dark:text-accent-400" />
             </div>
             <div>
@@ -1282,9 +1305,9 @@ function App() {
               {topLocations.map((location, index) => (
                 <div key={location.name} className="flex items-center gap-4">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white ${
-                    index === 0 ? 'bg-gradient-to-br from-amber-400 to-amber-500' :
-                    index === 1 ? 'bg-gradient-to-br from-gray-400 to-gray-500' :
-                    'bg-gradient-to-br from-orange-300 to-orange-400'
+                    index === 0 ? 'bg-linear-to-br from-amber-400 to-amber-500' :
+                    index === 1 ? 'bg-linear-to-br from-gray-400 to-gray-500' :
+                    'bg-linear-to-br from-orange-300 to-orange-400'
                   }`}>
                     {index + 1}
                   </div>
@@ -1295,7 +1318,7 @@ function App() {
                     </div>
                     <div className="progress-bar h-2">
                       <div 
-                        className="progress-fill bg-gradient-to-r from-primary-400 to-primary-500"
+                        className="progress-fill bg-linear-to-r from-primary-400 to-primary-500"
                         style={{ width: `${location.percentage}%` }}
                       />
                     </div>
@@ -1372,7 +1395,7 @@ function App() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/50 dark:to-red-800/50 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-linear-to-br from-red-100 to-red-200 dark:from-red-900/50 dark:to-red-800/50 rounded-xl flex items-center justify-center">
                 <ShieldAlert className="w-5 h-5 text-red-600 dark:text-red-400" />
               </div>
               <div>
@@ -1501,7 +1524,7 @@ function App() {
       <aside className="fixed left-0 top-0 h-full w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col z-50">
         <div className="p-6 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30">
+            <div className="w-10 h-10 bg-linear-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30">
               <FileSearch className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -1526,7 +1549,7 @@ function App() {
 
         <div className="p-4 border-t border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
-            <div className="w-10 h-10 bg-gradient-to-br from-accent-400 to-accent-500 rounded-full flex items-center justify-center text-white font-semibold">
+            <div className="w-10 h-10 bg-linear-to-br from-accent-400 to-accent-500 rounded-full flex items-center justify-center text-white font-semibold">
               {adminName.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1">
@@ -1620,7 +1643,7 @@ function App() {
                             }}
                           >
                             <div className="flex items-start gap-3">
-                              <div className="w-8 h-8 bg-gradient-to-br from-accent-100 to-accent-200 rounded-lg flex items-center justify-center shrink-0">
+                              <div className="w-8 h-8 bg-linear-to-br from-accent-100 to-accent-200 rounded-lg flex items-center justify-center shrink-0">
                                 <FileText className="w-4 h-4 text-accent-600" />
                               </div>
                               <div className="flex-1 min-w-0">
@@ -1658,7 +1681,7 @@ function App() {
               <div className="relative" ref={avatarRef}>
                 <div 
                   onClick={() => setShowAvatarMenu(!showAvatarMenu)}
-                  className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer hover:shadow-lg hover:shadow-primary-500/30 transition-all"
+                  className="w-10 h-10 bg-linear-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer hover:shadow-lg hover:shadow-primary-500/30 transition-all"
                 >
                   {adminName.charAt(0).toUpperCase()}
                 </div>
