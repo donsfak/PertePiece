@@ -599,15 +599,15 @@ function App() {
         <div className="stat-card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Total Déclarations</p>
-              <p className="text-3xl font-bold text-gray-900 mt-1">{stats.total}</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Déclarations</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.total}</p>
             </div>
             <div className="w-14 h-14 bg-linear-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center">
               <FileText className="w-7 h-7 text-primary-600" />
             </div>
           </div>
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <span className="text-xs text-gray-500">Toutes les déclarations enregistrées</span>
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+            <span className="text-xs text-gray-500 dark:text-gray-400">Toutes les déclarations enregistrées</span>
           </div>
         </div>
 
@@ -615,17 +615,17 @@ function App() {
         <div className="stat-card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Objets Retrouvés</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Objets Retrouvés</p>
               <p className="text-3xl font-bold text-emerald-600 mt-1">{stats.found}</p>
             </div>
             <div className="w-14 h-14 bg-linear-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center">
               <CheckCircle2 className="w-7 h-7 text-emerald-600" />
             </div>
           </div>
-          <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-2">
               <span className="badge badge-success">RETROUVÉ</span>
-              <span className="text-xs text-gray-500">Documents récupérés</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">Documents récupérés</span>
             </div>
           </div>
         </div>
@@ -634,41 +634,41 @@ function App() {
         <div className="stat-card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">En Attente</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">En Attente</p>
               <p className="text-3xl font-bold text-amber-600 mt-1">{stats.pending}</p>
             </div>
             <div className="w-14 h-14 bg-linear-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center">
               <Clock className="w-7 h-7 text-amber-600" />
             </div>
           </div>
-          <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-2">
               <span className="badge badge-warning">EN ATTENTE</span>
-              <span className="text-xs text-gray-500">À traiter</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">À traiter</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Table Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {/* Table Header */}
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Déclarations récentes</h3>
-            <p className="text-sm text-gray-500">{filteredDeclarations.length} résultat(s)</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Déclarations récentes</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{filteredDeclarations.length} résultat(s)</p>
           </div>
           
           <div className="flex items-center gap-3">
             {/* Search Filter */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Filtrer par nom, lieu..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 w-64 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-300 transition-all"
+                className="pl-10 pr-4 py-2 w-64 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-300 dark:focus:border-primary-500 transition-all"
               />
             </div>
             
@@ -689,7 +689,7 @@ function App() {
           <div className="flex items-center justify-center py-20">
             <div className="flex flex-col items-center gap-4">
               <RefreshCw className="w-8 h-8 text-primary-500 animate-spin" />
-              <p className="text-gray-500">Chargement des données...</p>
+              <p className="text-gray-500 dark:text-gray-400">Chargement des données...</p>
             </div>
           </div>
         ) : filteredDeclarations.length === 0 ? (
@@ -698,8 +698,8 @@ function App() {
               <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FileSearch className="w-10 h-10 text-gray-400" />
               </div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">Aucune déclaration</h4>
-              <p className="text-gray-500 max-w-sm">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucune déclaration</h4>
+              <p className="text-gray-500 dark:text-gray-400 max-w-sm">
                 {searchQuery 
                   ? "Aucun résultat ne correspond à votre recherche." 
                   : "Il n'y a pas encore de déclarations enregistrées."}
@@ -737,12 +737,12 @@ function App() {
                       )}
                     </td>
                     <td>
-                      <span className="font-semibold text-gray-900">
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {getDocName(item.document_type_id)}
                       </span>
                     </td>
-                    <td className="text-gray-600">{formatDateFR(item.incident_date)}</td>
-                    <td className="text-gray-600">{item.incident_location}</td>
+                    <td className="text-gray-600 dark:text-gray-300">{formatDateFR(item.incident_date)}</td>
+                    <td className="text-gray-600 dark:text-gray-300">{item.incident_location}</td>
                     <td>
                       <span className={`badge ${
                         item.status === 'RETROUVE' ? 'badge-success' : 'badge-warning'
@@ -750,7 +750,7 @@ function App() {
                         {item.status === 'RETROUVE' ? 'Retrouvé' : 'En attente'}
                       </span>
                     </td>
-                    <td className="max-w-xs truncate text-gray-600">{item.description}</td>
+                    <td className="max-w-xs truncate text-gray-600 dark:text-gray-300">{item.description}</td>
                     <td className="text-right">
                       <button
                         onClick={() => handleDelete(item.id)}
@@ -773,10 +773,10 @@ function App() {
   // Render Users Content with delete action
   const renderUsers = () => (
     <div className="animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900">Liste des utilisateurs</h3>
-          <p className="text-sm text-gray-500">{usersData.length} utilisateur(s) actif(s)</p>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Liste des utilisateurs</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{usersData.length} utilisateur(s) actif(s)</p>
         </div>
 
         {usersData.length === 0 ? (
@@ -785,8 +785,8 @@ function App() {
               <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-10 h-10 text-gray-400" />
               </div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">Aucun utilisateur</h4>
-              <p className="text-gray-500">Aucune déclaration n'a été enregistrée.</p>
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucun utilisateur</h4>
+              <p className="text-gray-500 dark:text-gray-400">Aucune déclaration n'a été enregistrée.</p>
             </div>
           </div>
         ) : (
@@ -855,8 +855,8 @@ function App() {
         {/* Reports Header with Download Button */}
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Statistiques et Analyses</h3>
-            <p className="text-sm text-gray-500">Visualisez les données de vos déclarations</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Statistiques et Analyses</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Visualisez les données de vos déclarations</p>
           </div>
           <button
             onClick={handleExportPDF}
@@ -868,14 +868,14 @@ function App() {
         </div>
 
         {/* Lost vs Found Breakdown */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-linear-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-primary-600" />
+            <div className="w-10 h-10 bg-linear-to-br from-primary-100 to-primary-200 dark:from-primary-900/50 dark:to-primary-800/50 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Répartition Perdus vs Retrouvés</h3>
-              <p className="text-sm text-gray-500">Sur un total de {stats.total} déclaration(s)</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Répartition Perdus vs Retrouvés</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Sur un total de {stats.total} déclaration(s)</p>
             </div>
           </div>
 
@@ -883,7 +883,7 @@ function App() {
             {/* Lost */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Perdus / En attente</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Perdus / En attente</span>
                 <span className="text-sm font-bold text-amber-600">{lostPercentage}%</span>
               </div>
               <div className="progress-bar">
@@ -892,13 +892,13 @@ function App() {
                   style={{ width: `${lostPercentage}%` }}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">{stats.lost} déclaration(s)</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{stats.lost} déclaration(s)</p>
             </div>
 
             {/* Found */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Retrouvés</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Retrouvés</span>
                 <span className="text-sm font-bold text-emerald-600">{foundPercentage}%</span>
               </div>
               <div className="progress-bar">
@@ -907,26 +907,26 @@ function App() {
                   style={{ width: `${foundPercentage}%` }}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">{stats.found} déclaration(s)</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{stats.found} déclaration(s)</p>
             </div>
           </div>
         </div>
 
         {/* Top Locations */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-linear-to-br from-accent-100 to-accent-200 rounded-xl flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-accent-600" />
+            <div className="w-10 h-10 bg-linear-to-br from-accent-100 to-accent-200 dark:from-accent-900/50 dark:to-accent-800/50 rounded-xl flex items-center justify-center">
+              <MapPin className="w-5 h-5 text-accent-600 dark:text-accent-400" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Top 3 des lieux les plus fréquents</h3>
-              <p className="text-sm text-gray-500">Zones avec le plus de pertes signalées</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Top 3 des lieux les plus fréquents</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Zones avec le plus de pertes signalées</p>
             </div>
           </div>
 
           {topLocations.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500">Aucune donnée de localisation disponible</p>
+              <p className="text-gray-500 dark:text-gray-400">Aucune donnée de localisation disponible</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -941,8 +941,8 @@ function App() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-gray-900">{location.name}</span>
-                      <span className="text-sm text-gray-500">{location.count} déclaration(s)</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{location.name}</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{location.count} déclaration(s)</span>
                     </div>
                     <div className="progress-bar h-2">
                       <div 
@@ -964,8 +964,8 @@ function App() {
   const renderSettings = () => (
     <div className="animate-fade-in">
       <div className="max-w-2xl">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Paramètres du compte</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Paramètres du compte</h3>
           
           <div className="space-y-6">
             {/* Admin Name */}
@@ -990,7 +990,7 @@ function App() {
                 className="form-input"
                 placeholder="email@exemple.com"
               />
-              <p className="text-xs text-gray-500 mt-2">Les alertes seront envoyées à cette adresse</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Les alertes seront envoyées à cette adresse</p>
             </div>
 
             {/* Save Button */}
@@ -1005,10 +1005,10 @@ function App() {
         </div>
 
         {/* Logout Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Session</h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Connecté en tant que: <span className="font-medium text-gray-700">{session?.user?.email}</span>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mt-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Session</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Connecté en tant que: <span className="font-medium text-gray-700 dark:text-gray-300">{session?.user?.email}</span>
           </p>
           <button
             onClick={handleLogout}
@@ -1141,23 +1141,23 @@ function App() {
 
                 {/* Notification Dropdown */}
                 {showNotifications && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 py-2 animate-fade-in">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <h4 className="font-semibold text-gray-900">Notifications récentes</h4>
-                      <p className="text-xs text-gray-500">{stats.pending} déclaration(s) en attente</p>
+                  <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 animate-fade-in">
+                    <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">Notifications récentes</h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{stats.pending} déclaration(s) en attente</p>
                     </div>
                     
                     {recentPendingDeclarations.length === 0 ? (
                       <div className="px-4 py-6 text-center">
                         <Bell className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">Aucune nouvelle déclaration</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Aucune nouvelle déclaration</p>
                       </div>
                     ) : (
                       <div className="max-h-64 overflow-y-auto">
                         {recentPendingDeclarations.map((item) => (
                           <div 
                             key={item.id} 
-                            className="px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50 last:border-0"
+                            className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer border-b border-gray-50 dark:border-gray-700 last:border-0"
                             onClick={() => {
                               setActiveTab('dashboard')
                               setShowNotifications(false)
@@ -1168,10 +1168,10 @@ function App() {
                                 <FileText className="w-4 h-4 text-accent-600" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900">
+                                <p className="text-sm font-medium text-gray-900 dark:text-white">
                                   Nouvelle {getDocName(item.document_type_id)} déclarée
                                 </p>
-                                <p className="text-xs text-gray-500 truncate">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                                   📍 {item.incident_location || 'Lieu non spécifié'}
                                 </p>
                                 <p className="text-xs text-gray-400 mt-1">
