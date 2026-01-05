@@ -30,7 +30,8 @@ import {
   Download,
   Sun,
   Moon,
-  Check
+  Check,
+  ShieldAlert
 } from 'lucide-react'
 
 // Fix Leaflet default marker icon issue
@@ -92,12 +93,17 @@ const getCoordinates = (locationName) => {
 // Toast Component
 function Toast({ message, type, onClose }) {
   useEffect(() => {
-    const timer = setTimeout(onClose, 3000)
+    // On lance le chrono pour 5 secondes (5000 ms)
+    const timer = setTimeout(() => {
+      onClose()
+    }, 5000)
+
+    // Nettoyage : Si l'utilisateur ferme manuellement avant les 5s, on annule le chrono
     return () => clearTimeout(timer)
   }, [onClose])
 
   return (
-    <div className={`toast ${type === 'success' ? 'toast-success' : 'toast-error'}`}>
+    <div className={`toast ${type === 'success' ? 'toast-success' : 'toast-error'} animate-fade-in-down`}>
       <div className="flex items-center gap-3">
         {type === 'success' ? (
           <CheckCircle2 className="w-5 h-5" />
@@ -114,27 +120,100 @@ function Toast({ message, type, onClose }) {
 }
 
 // Login Page Component
-function LoginPage({ onLogin, isLoading }) {
+function LoginPage({ onLogin, isLoading, onSignUpSuccess, setRegistering }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [fullName, setFullName] = useState('')
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const [localLoading, setLocalLoading] = useState(false)
+  const [isSignUp, setIsSignUp] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setSuccessMessage('')
     
+    // Validation
     if (!email || !password) {
       setError('Veuillez remplir tous les champs')
       return
     }
 
+    if (isSignUp && !fullName.trim()) {
+      setError('Veuillez entrer votre nom complet')
+      return
+    }
+
     setLocalLoading(true)
     try {
-      const result = await onLogin(email, password)
-      
-      if (result && result.error) {
-        setError(result.error)
+      if (isSignUp) {
+        // Set registration flag to prevent dashboard flash
+        if (setRegistering) {
+          setRegistering(true)
+        }
+
+        // Sign Up Logic
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName.trim()
+            }
+          }
+        })
+
+        if (signUpError) {
+          console.error('Sign up error:', signUpError)
+          // Clear registration flag on error
+          if (setRegistering) {
+            setRegistering(false)
+          }
+          
+          let errorMessage = 'Erreur lors de l\'inscription'
+          
+          if (signUpError.message.includes('already registered')) {
+            errorMessage = 'Cet email est déjà utilisé'
+          } else if (signUpError.message.includes('Password')) {
+            errorMessage = 'Le mot de passe doit contenir au moins 6 caractères'
+          } else if (signUpError.message.includes('email')) {
+            errorMessage = 'Adresse email invalide'
+          }
+          
+          setError(errorMessage)
+          return
+        }
+
+        // Force logout to prevent auto-login
+        await supabase.auth.signOut()
+        
+        // Clear registration flag after signOut is complete
+        if (setRegistering) {
+          setRegistering(false)
+        }
+        
+        // Keep email pre-filled for easy login, clear password only
+        setPassword('')
+        setFullName('')
+        
+        // IMPORTANT: Set success message BEFORE switching mode
+        // This ensures the message is visible when the login form renders
+        setSuccessMessage('Compte créé avec succès ! Veuillez vous connecter avec vos identifiants.')
+        
+        // Then switch to login mode
+        setIsSignUp(false)
+
+        if (onSignUpSuccess) {
+          onSignUpSuccess()
+        }
+      } else {
+        // Login Logic
+        const result = await onLogin(email, password)
+        
+        if (result && result.error) {
+          setError(result.error)
+        }
       }
     } catch (err) {
       setError('Une erreur inattendue est survenue')
@@ -143,12 +222,19 @@ function LoginPage({ onLogin, isLoading }) {
     }
   }
 
+  // Toggle between Login and Sign Up
+  const toggleMode = () => {
+    setIsSignUp(!isSignUp)
+    setError('')
+    setSuccessMessage('')
+  }
+
   const showLoading = isLoading || localLoading
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Login Card */}
+        {/* Login/SignUp Card */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 transition-all">
           {/* Logo */}
           <div className="text-center mb-8">
@@ -156,8 +242,21 @@ function LoginPage({ onLogin, isLoading }) {
               <FileSearch className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">PertePiece</h1>
-            <p className="text-gray-500 mt-1">Administration</p>
+            <p className="text-gray-500 mt-1">{isSignUp ? 'Créer un compte' : 'Administration'}</p>
           </div>
+
+          {/* Success Message */}
+          {successMessage && (
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3 shadow-sm animate-fade-in" role="alert">
+              <div className="shrink-0 mt-0.5">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-emerald-800">Succès</p>
+                <p className="text-sm text-emerald-600 mt-1">{successMessage}</p>
+              </div>
+            </div>
+          )}
 
           {/* Error Popup */}
           {error && (
@@ -166,7 +265,7 @@ function LoginPage({ onLogin, isLoading }) {
                 <AlertCircle className="w-5 h-5 text-red-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-red-800">Erreur de connexion</p>
+                <p className="text-sm font-semibold text-red-800">{isSignUp ? 'Erreur d\'inscription' : 'Erreur de connexion'}</p>
                 <p className="text-sm text-red-600 mt-1">{error}</p>
               </div>
               <button 
@@ -179,8 +278,28 @@ function LoginPage({ onLogin, isLoading }) {
             </div>
           )}
 
-          {/* Login Form */}
+          {/* Login/SignUp Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Full Name - Only in Sign Up Mode */}
+            {isSignUp && (
+              <div className="animate-fade-in">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nom complet
+                </label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    autoComplete="name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className={`w-full pl-12 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 focus:bg-white transition-all ${error ? 'border-red-300 bg-red-50/30' : 'border-gray-200'}`}
+                    placeholder="Jean Dupont"
+                  />
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Adresse email
@@ -206,13 +325,16 @@ function LoginPage({ onLogin, isLoading }) {
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete={isSignUp ? "new-password" : "current-password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`w-full pl-12 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 focus:bg-white transition-all ${error ? 'border-red-300 bg-red-50/30' : 'border-gray-200'}`}
                   placeholder="••••••••"
                 />
               </div>
+              {isSignUp && (
+                <p className="text-xs text-gray-400 mt-1">Minimum 6 caractères</p>
+              )}
             </div>
 
             <button
@@ -223,17 +345,30 @@ function LoginPage({ onLogin, isLoading }) {
               {showLoading ? (
                 <>
                   <RefreshCw className="w-5 h-5 animate-spin" />
-                  Connexion...
+                  {isSignUp ? 'Inscription...' : 'Connexion...'}
                 </>
               ) : (
-                'Se connecter'
+                isSignUp ? 'S\'inscrire' : 'Se connecter'
               )}
             </button>
           </form>
 
+          {/* Toggle Login/SignUp */}
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors"
+            >
+              {isSignUp 
+                ? 'Déjà un compte ? Se connecter' 
+                : 'Pas encore de compte ? S\'inscrire'}
+            </button>
+          </div>
+
           {/* Footer */}
-          <p className="text-center text-xs text-gray-400 mt-8">
-            Accès réservé aux administrateurs
+          <p className="text-center text-xs text-gray-400 mt-6">
+            {isSignUp ? 'Créez votre compte administrateur' : 'Accès réservé aux administrateurs'}
           </p>
         </div>
       </div>
@@ -252,6 +387,10 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' })
   
+  // Audit History state
+  const [archivedDeclarations, setArchivedDeclarations] = useState([])
+  const [auditLoading, setAuditLoading] = useState(false)
+  
   // Time State for the Clock
   const [currentTime, setCurrentTime] = useState(new Date())
 
@@ -262,6 +401,9 @@ function App() {
   // Avatar dropdown state
   const [showAvatarMenu, setShowAvatarMenu] = useState(false)
   const avatarRef = useRef(null)
+  
+  // Registration in progress flag - prevents dashboard flash during sign-up
+  const isRegistering = useRef(false)
   
   // Settings state
   const [adminName, setAdminName] = useState('Admin')
@@ -292,6 +434,29 @@ function App() {
     }
     localStorage.setItem('darkMode', darkMode.toString())
   }, [darkMode])
+
+  // Fetch archived declarations when audit tab becomes active
+  useEffect(() => {
+    if (activeTab === 'audit') {
+      const fetchArchives = async () => {
+        try {
+          setAuditLoading(true)
+          const { data, error } = await supabase
+            .from('archives_declarations')
+            .select('*')
+            .order('deleted_at', { ascending: false })
+          
+          if (error) throw error
+          setArchivedDeclarations(data || [])
+        } catch (error) {
+          console.error('Erreur chargement archives:', error.message)
+        } finally {
+          setAuditLoading(false)
+        }
+      }
+      fetchArchives()
+    }
+  }, [activeTab])
 
   // Toggle dark mode
   const toggleDarkMode = () => {
@@ -338,11 +503,21 @@ function App() {
     initSession()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Block session updates during registration to prevent dashboard flash
+      if (isRegistering.current) {
+        console.log('Registration in progress - ignoring session update')
+        return
+      }
       setSession(session)
     })
 
     return () => subscription.unsubscribe()
   }, [])
+
+  // Registration flag setter - passed to LoginPage
+  const setRegistering = (value) => {
+    isRegistering.current = value
+  }
 
   // Show toast helper
   const showToast = (message, type = 'success') => {
@@ -652,6 +827,7 @@ function App() {
     { id: 'dashboard', icon: LayoutDashboard, label: 'Tableau de bord' },
     { id: 'users', icon: Users, label: 'Utilisateurs' },
     { id: 'reports', icon: FileText, label: 'Rapports' },
+    { id: 'audit', icon: ShieldAlert, label: 'Audit' },
     { id: 'settings', icon: Settings, label: 'Paramètres' },
   ]
 
@@ -663,6 +839,8 @@ function App() {
         return { title: 'Utilisateurs', subtitle: 'Activité des utilisateurs' }
       case 'reports':
         return { title: 'Rapports', subtitle: 'Statistiques et analyses' }
+      case 'audit':
+        return { title: 'Historique d\'Audit', subtitle: 'Journal des suppressions' }
       case 'settings':
         return { title: 'Paramètres', subtitle: 'Configuration de l\'application' }
       default:
@@ -684,7 +862,7 @@ function App() {
   }
 
   if (!session) {
-    return <LoginPage onLogin={handleLogin} isLoading={authLoading} />
+    return <LoginPage onLogin={handleLogin} isLoading={authLoading} setRegistering={setRegistering} />
   }
 
   const renderDashboard = () => (
@@ -1188,6 +1366,111 @@ function App() {
     </div>
   )
 
+  // Render Audit History
+  const renderAudit = () => (
+    <div className="animate-fade-in">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/50 dark:to-red-800/50 rounded-xl flex items-center justify-center">
+                <ShieldAlert className="w-5 h-5 text-red-600 dark:text-red-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Journal des Suppressions</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{archivedDeclarations.length} enregistrement(s) archivé(s)</p>
+              </div>
+            </div>
+          </div>
+
+          {auditLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="flex flex-col items-center gap-4">
+                <RefreshCw className="w-8 h-8 text-primary-500 animate-spin" />
+                <p className="text-gray-500 dark:text-gray-400">Chargement des archives...</p>
+              </div>
+            </div>
+          ) : archivedDeclarations.length === 0 ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ShieldAlert className="w-10 h-10 text-gray-400" />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucune suppression</h4>
+                <p className="text-gray-500 dark:text-gray-400">L'historique d'audit est vide.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Type Document</th>
+                    <th>Lieu de l'incident</th>
+                    <th>Date Incident</th>
+                    <th>Supprimé le</th>
+                    <th>Supprimé par</th>
+                    <th>ID Original</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {archivedDeclarations.map((item) => (
+                    <tr key={item.id}>
+                      <td>
+                        <span className="font-semibold text-gray-900 dark:text-white">
+                          {getDocName(item.document_type_id)}
+                        </span>
+                      </td>
+                      <td className="text-gray-600 dark:text-gray-300">
+                        {item.incident_location || '-'}
+                      </td>
+                      <td className="text-gray-600 dark:text-gray-300">
+                        {formatDateFR(item.incident_date)}
+                      </td>
+                      <td>
+                        <span className="text-red-600 dark:text-red-400 font-medium">
+                          {item.deleted_at ? new Date(item.deleted_at).toLocaleString('fr-FR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }) : '-'}
+                        </span>
+                      </td>
+                      <td>
+                        <code className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg text-gray-600 dark:text-gray-300">
+                          {item.deleted_by ? `${item.deleted_by.substring(0, 8)}...` : 'Système'}
+                        </code>
+                      </td>
+                      <td>
+                        <code className="text-xs bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-lg text-amber-700 dark:text-amber-400">
+                          {item.original_id || item.id}
+                        </code>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Audit Info Card */}
+        <div className="mt-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-300">À propos de l'audit</p>
+              <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+                Ce journal enregistre automatiquement toutes les suppressions de déclarations. 
+                Les données sont préservées à des fins de sécurité et de traçabilité.
+              </p>
+            </div>
+          </div>
+      </div>
+    </div>
+  )
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -1196,6 +1479,8 @@ function App() {
         return renderUsers()
       case 'reports':
         return renderReports()
+      case 'audit':
+        return renderAudit()
       case 'settings':
         return renderSettings()
       default:
