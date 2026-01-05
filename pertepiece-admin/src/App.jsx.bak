@@ -1,7 +1,5 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { supabase } from './supabaseClient'
-import { jsPDF } from 'jspdf'
-import 'jspdf-autotable'
 import { 
   LayoutDashboard, 
   Users, 
@@ -23,10 +21,7 @@ import {
   X,
   User,
   Lock,
-  Mail,
-  Download,
-  Sun,
-  Moon
+  Mail
 } from 'lucide-react'
 
 // Toast Component
@@ -88,13 +83,13 @@ function LoginPage({ onLogin, isLoading }) {
   const showLoading = isLoading || localLoading
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Login Card */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 transition-all">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-linear-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-primary-500/30 mb-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-primary-500/30 mb-4">
               <FileSearch className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">PertePiece</h1>
@@ -104,7 +99,7 @@ function LoginPage({ onLogin, isLoading }) {
           {/* Error Popup - Visible et Stylisé (Animation retirée pour garantir la visibilité) */}
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 shadow-sm" role="alert">
-              <div className="shrink-0 mt-0.5">
+              <div className="flex-shrink-0 mt-0.5">
                 <AlertCircle className="w-5 h-5 text-red-600" />
               </div>
               <div className="flex-1">
@@ -113,7 +108,7 @@ function LoginPage({ onLogin, isLoading }) {
               </div>
               <button 
                 onClick={() => setError('')}
-                className="shrink-0 text-red-400 hover:text-red-600 transition-colors"
+                className="flex-shrink-0 text-red-400 hover:text-red-600 transition-colors"
                 aria-label="Fermer"
               >
                 <X className="w-5 h-5" />
@@ -160,7 +155,7 @@ function LoginPage({ onLogin, isLoading }) {
             <button
               type="submit"
               disabled={showLoading}
-              className="w-full py-3 bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {showLoading ? (
                 <>
@@ -205,29 +200,6 @@ function App() {
   // Settings state
   const [adminName, setAdminName] = useState('Admin')
   const [notificationEmail, setNotificationEmail] = useState('admin@pertepiece.com')
-  
-  // Dark mode state with localStorage persistence
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('darkMode') === 'true'
-    }
-    return false
-  })
-  
-  // Apply dark mode class to html element
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-    localStorage.setItem('darkMode', darkMode.toString())
-  }, [darkMode])
-
-  // Toggle dark mode
-  const toggleDarkMode = () => {
-    setDarkMode(prev => !prev)
-  }
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -450,29 +422,15 @@ function App() {
     if (!window.confirm('Voulez-vous supprimer toutes les données de cet utilisateur ? Cette action est irréversible.')) return
     
     try {
-      // Count declarations before deletion for feedback
-      const userDeclarations = declarations.filter(d => d.user_id === userId)
-      const count = userDeclarations.length
-      
-      const { error, count: deletedCount } = await supabase
+      const { error } = await supabase
         .from('declarations')
         .delete()
         .eq('user_id', userId)
-        .select('id', { count: 'exact' })
       
-      if (error) {
-        console.error('Erreur Supabase lors de la suppression:', error)
-        alert(`Échec de la suppression dans la base de données.\n\nErreur: ${error.message}\n\nVérifiez vos politiques RLS dans Supabase.`)
-        showToast('Erreur lors de la suppression: ' + error.message, 'error')
-        return
-      }
-      
-      // Update local state
+      if (error) throw error
       setDeclarations(declarations.filter(d => d.user_id !== userId))
-      showToast(`${count} déclaration(s) supprimée(s) avec succès`, 'success')
+      showToast('Utilisateur et ses données supprimés avec succès', 'success')
     } catch (error) {
-      console.error('Erreur inattendue lors de la suppression:', error)
-      alert(`Une erreur inattendue s'est produite.\n\nErreur: ${error.message}`)
       showToast('Erreur lors de la suppression: ' + error.message, 'error')
     }
   }
@@ -480,72 +438,6 @@ function App() {
   // Handle settings save (dummy)
   const handleSaveSettings = () => {
     showToast('Paramètres enregistrés avec succès', 'success')
-  }
-
-  // Export PDF Report
-  const handleExportPDF = () => {
-    const doc = new jsPDF()
-    const pageWidth = doc.internal.pageSize.getWidth()
-    
-    // Title
-    doc.setFontSize(20)
-    doc.setTextColor(79, 70, 229) // Primary color
-    doc.text('Rapport Mensuel - PertePiece', pageWidth / 2, 20, { align: 'center' })
-    
-    // Date
-    doc.setFontSize(10)
-    doc.setTextColor(107, 114, 128) // Gray
-    doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, pageWidth / 2, 28, { align: 'center' })
-    
-    // Stats Summary
-    doc.setFontSize(14)
-    doc.setTextColor(17, 24, 39) // Dark
-    doc.text('Résumé des statistiques', 14, 45)
-    
-    doc.setFontSize(11)
-    doc.setTextColor(55, 65, 81)
-    doc.text(`• Total des déclarations: ${stats.total}`, 20, 55)
-    doc.text(`• Objets retrouvés: ${stats.found}`, 20, 63)
-    doc.text(`• En attente: ${stats.pending}`, 20, 71)
-    
-    // Found Items Table
-    const foundItems = declarations.filter(d => d.status === 'RETROUVE')
-    
-    if (foundItems.length > 0) {
-      doc.setFontSize(14)
-      doc.setTextColor(17, 24, 39)
-      doc.text('Objets Retrouvés', 14, 90)
-      
-      const tableData = foundItems.map(item => [
-        getDocName(item.document_type_id),
-        formatDateFR(item.incident_date),
-        item.incident_location || '-',
-        item.description?.substring(0, 30) + (item.description?.length > 30 ? '...' : '') || '-'
-      ])
-      
-      doc.autoTable({
-        startY: 95,
-        head: [['Type', 'Date', 'Lieu', 'Description']],
-        body: tableData,
-        styles: { fontSize: 9, cellPadding: 3 },
-        headStyles: { fillColor: [79, 70, 229], textColor: 255 },
-        alternateRowStyles: { fillColor: [249, 250, 251] }
-      })
-    } else {
-      doc.setFontSize(11)
-      doc.setTextColor(107, 114, 128)
-      doc.text('Aucun objet retrouvé pour le moment.', 14, 90)
-    }
-    
-    // Footer
-    const pageHeight = doc.internal.pageSize.getHeight()
-    doc.setFontSize(8)
-    doc.setTextColor(156, 163, 175)
-    doc.text('PertePiece Admin - Rapport automatique', pageWidth / 2, pageHeight - 10, { align: 'center' })
-    
-    // Download
-    doc.save(`rapport-pertepiece-${new Date().toISOString().split('T')[0]}.pdf`)
-    showToast('Rapport PDF téléchargé avec succès', 'success')
   }
 
   const menuItems = [
@@ -576,7 +468,7 @@ function App() {
   // Show loading while checking auth
   if (authLoading && !session) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center">
         <div className="text-center">
           <RefreshCw className="w-10 h-10 text-white animate-spin mx-auto mb-4" />
           <p className="text-white/80">Chargement...</p>
@@ -602,7 +494,7 @@ function App() {
               <p className="text-sm font-medium text-gray-500">Total Déclarations</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{stats.total}</p>
             </div>
-            <div className="w-14 h-14 bg-linear-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center">
               <FileText className="w-7 h-7 text-primary-600" />
             </div>
           </div>
@@ -618,7 +510,7 @@ function App() {
               <p className="text-sm font-medium text-gray-500">Objets Retrouvés</p>
               <p className="text-3xl font-bold text-emerald-600 mt-1">{stats.found}</p>
             </div>
-            <div className="w-14 h-14 bg-linear-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center">
               <CheckCircle2 className="w-7 h-7 text-emerald-600" />
             </div>
           </div>
@@ -637,7 +529,7 @@ function App() {
               <p className="text-sm font-medium text-gray-500">En Attente</p>
               <p className="text-3xl font-bold text-amber-600 mt-1">{stats.pending}</p>
             </div>
-            <div className="w-14 h-14 bg-linear-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center">
               <Clock className="w-7 h-7 text-amber-600" />
             </div>
           </div>
@@ -806,7 +698,7 @@ function App() {
                   <tr key={user.userId}>
                     <td>
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-linear-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
                           <User className="w-5 h-5" />
                         </div>
                         <span className="font-medium text-gray-900">Utilisateur {index + 1}</span>
@@ -852,25 +744,10 @@ function App() {
 
     return (
       <div className="animate-fade-in space-y-6">
-        {/* Reports Header with Download Button */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">Statistiques et Analyses</h3>
-            <p className="text-sm text-gray-500">Visualisez les données de vos déclarations</p>
-          </div>
-          <button
-            onClick={handleExportPDF}
-            className="flex items-center gap-2 px-4 py-2.5 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-medium text-sm transition-colors shadow-lg shadow-primary-500/30"
-          >
-            <Download className="w-4 h-4" />
-            📄 Télécharger le rapport
-          </button>
-        </div>
-
         {/* Lost vs Found Breakdown */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-linear-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center">
               <TrendingUp className="w-5 h-5 text-primary-600" />
             </div>
             <div>
@@ -888,7 +765,7 @@ function App() {
               </div>
               <div className="progress-bar">
                 <div 
-                  className="progress-fill bg-linear-to-r from-amber-400 to-amber-500"
+                  className="progress-fill bg-gradient-to-r from-amber-400 to-amber-500"
                   style={{ width: `${lostPercentage}%` }}
                 />
               </div>
@@ -903,7 +780,7 @@ function App() {
               </div>
               <div className="progress-bar">
                 <div 
-                  className="progress-fill bg-linear-to-r from-emerald-400 to-emerald-500"
+                  className="progress-fill bg-gradient-to-r from-emerald-400 to-emerald-500"
                   style={{ width: `${foundPercentage}%` }}
                 />
               </div>
@@ -915,7 +792,7 @@ function App() {
         {/* Top Locations */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-linear-to-br from-accent-100 to-accent-200 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-accent-100 to-accent-200 rounded-xl flex items-center justify-center">
               <MapPin className="w-5 h-5 text-accent-600" />
             </div>
             <div>
@@ -933,9 +810,9 @@ function App() {
               {topLocations.map((location, index) => (
                 <div key={location.name} className="flex items-center gap-4">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white ${
-                    index === 0 ? 'bg-linear-to-br from-amber-400 to-amber-500' :
-                    index === 1 ? 'bg-linear-to-br from-gray-400 to-gray-500' :
-                    'bg-linear-to-br from-orange-300 to-orange-400'
+                    index === 0 ? 'bg-gradient-to-br from-amber-400 to-amber-500' :
+                    index === 1 ? 'bg-gradient-to-br from-gray-400 to-gray-500' :
+                    'bg-gradient-to-br from-orange-300 to-orange-400'
                   }`}>
                     {index + 1}
                   </div>
@@ -946,7 +823,7 @@ function App() {
                     </div>
                     <div className="progress-bar h-2">
                       <div 
-                        className="progress-fill bg-linear-to-r from-primary-400 to-primary-500"
+                        className="progress-fill bg-gradient-to-r from-primary-400 to-primary-500"
                         style={{ width: `${location.percentage}%` }}
                       />
                     </div>
@@ -1050,16 +927,16 @@ function App() {
       )}
 
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col z-50">
+      <aside className="fixed left-0 top-0 h-full w-72 bg-white border-r border-gray-200 flex flex-col z-50">
         {/* Logo */}
-        <div className="p-6 border-b border-gray-100 dark:border-gray-800">
+        <div className="p-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-linear-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30">
               <FileSearch className="w-5 h-5 text-white" />
             </div>
             <div>
-            <h1 className="text-lg font-bold text-gray-900 dark:text-white">PertePiece</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Administration</p>
+              <h1 className="text-lg font-bold text-gray-900">PertePiece</h1>
+              <p className="text-xs text-gray-500">Administration</p>
             </div>
           </div>
         </div>
@@ -1079,14 +956,14 @@ function App() {
         </nav>
 
         {/* User Section */}
-        <div className="p-4 border-t border-gray-100 dark:border-gray-800">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
-            <div className="w-10 h-10 bg-linear-to-br from-accent-400 to-accent-500 rounded-full flex items-center justify-center text-white font-semibold">
+        <div className="p-4 border-t border-gray-100">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+            <div className="w-10 h-10 bg-gradient-to-br from-accent-400 to-accent-500 rounded-full flex items-center justify-center text-white font-semibold">
               {adminName.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">{adminName}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Administrateur</p>
+              <p className="text-sm font-medium text-gray-900">{adminName}</p>
+              <p className="text-xs text-gray-500">Administrateur</p>
             </div>
             <ChevronDown className="w-4 h-4 text-gray-400" />
           </div>
@@ -1096,36 +973,23 @@ function App() {
       {/* Main Content */}
       <main className="flex-1 ml-72">
         {/* Top Bar */}
-        <header className="sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 z-40">
+        <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-40">
           <div className="flex items-center justify-between px-8 py-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{headerInfo.title}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{headerInfo.subtitle}</p>
+              <h2 className="text-2xl font-bold text-gray-900">{headerInfo.title}</h2>
+              <p className="text-sm text-gray-500">{headerInfo.subtitle}</p>
             </div>
             
             <div className="flex items-center gap-4">
               {/* Global Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Rechercher..."
-                  className="pl-10 pr-4 py-2 w-64 bg-gray-100 dark:bg-gray-800 border-0 rounded-xl text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-white dark:focus:bg-gray-700 transition-all"
+                  className="pl-10 pr-4 py-2 w-64 bg-gray-100 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-white transition-all"
                 />
               </div>
-              
-              {/* Dark Mode Toggle */}
-              <button
-                onClick={toggleDarkMode}
-                className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                title={darkMode ? 'Mode clair' : 'Mode sombre'}
-              >
-                {darkMode ? (
-                  <Sun className="w-5 h-5 text-amber-500" />
-                ) : (
-                  <Moon className="w-5 h-5 text-gray-600" />
-                )}
-              </button>
               
               {/* Notifications Bell */}
               <div className="relative" ref={notificationRef}>
@@ -1164,7 +1028,7 @@ function App() {
                             }}
                           >
                             <div className="flex items-start gap-3">
-                              <div className="w-8 h-8 bg-linear-to-br from-accent-100 to-accent-200 rounded-lg flex items-center justify-center shrink-0">
+                              <div className="w-8 h-8 bg-gradient-to-br from-accent-100 to-accent-200 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <FileText className="w-4 h-4 text-accent-600" />
                               </div>
                               <div className="flex-1 min-w-0">
@@ -1203,7 +1067,7 @@ function App() {
               <div className="relative" ref={avatarRef}>
                 <div 
                   onClick={() => setShowAvatarMenu(!showAvatarMenu)}
-                  className="w-10 h-10 bg-linear-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer hover:shadow-lg hover:shadow-primary-500/30 transition-all"
+                  className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer hover:shadow-lg hover:shadow-primary-500/30 transition-all"
                 >
                   {adminName.charAt(0).toUpperCase()}
                 </div>
